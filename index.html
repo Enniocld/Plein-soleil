@@ -1,109 +1,236 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pointage Cuisine</title>
-  <meta name="theme-color" content="#ff7e5f">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="style.css">
+
+  <!-- Design prêt à l'emploi -->
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+
+  <style>
+    :root { --w: 980px; }
+    body { min-height: 100vh; background: linear-gradient(180deg,#0b1220,#0f172a); }
+    header, main { max-width: var(--w); margin: 0 auto; }
+    header { padding: 24px 16px 0; }
+    main { padding: 8px 16px 40px; }
+    .card { background: #0d1324; border: 1px solid #1f2a44; border-radius: 14px; padding: 18px; }
+    h1, h2 { margin: .2rem 0 .8rem; }
+    small.muted { color: #94a3b8; }
+    table thead th { white-space: nowrap; }
+    .actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+    footer { max-width: var(--w); margin: 24px auto 56px; padding: 0 16px; color:#94a3b8; }
+  </style>
 </head>
+
 <body>
-  <header class="appbar">
-    <h1>📋 Pointage Cuisine</h1>
-    <button id="installBtn" class="secondary" hidden>Installer</button>
+  <header>
+    <h1>🍽️ Pointage Cuisine</h1>
+    <small class="muted">Déclare ton pointage et garde l’historique dans ce navigateur.</small>
   </header>
 
-  <main class="container">
+  <main>
     <section class="card">
       <h2>Déclarer mon pointage</h2>
-      <form id="form">
-        <label for="name">Nom / code <span class="req">*</span></label>
-        <input id="name" name="name" autocomplete="name" placeholder="Ex: Ennio" required>
-
-        <label for="role">Poste <span class="req">*</span></label>
-        <select id="role" name="role" required>
-          <option value="">-- Sélectionnez --</option>
-          <option>Chef</option>
-          <option>Second</option>
-          <option>Chef de partie</option>
-          <option>Commis</option>
-          <option>Apprenti</option>
-        </select>
-
-        <div class="grid-2">
+      <form id="formPointage">
+        <div class="grid">
           <div>
-            <label for="departure_time">Heure de départ</label>
-            <input id="departure_time" name="departure_time" type="time">
+            <label for="nom">Nom / code</label>
+            <input id="nom" name="nom" type="text" placeholder="Ex : Ennio" required>
           </div>
+
           <div>
-            <label for="arrived_late">Arrivé en retard ?</label>
-            <select id="arrived_late" name="arrived_late">
-              <option value="0">Non</option>
-              <option value="1">Oui</option>
+            <label for="poste">Poste</label>
+            <select id="poste" name="poste" required>
+              <option value="">— Sélectionnez —</option>
+              <option>Plonge</option>
+              <option>Entrées</option>
+              <option>Chauds</option>
+              <option>Desserts</option>
+              <option>Service</option>
+              <option>Économat</option>
+              <option>Pass</option>
             </select>
           </div>
+
+          <div>
+            <label for="depart">Heure de départ</label>
+            <input id="depart" name="depart" type="time" placeholder="12:30" required>
+          </div>
+
+          <div>
+            <label for="retard">Arrivé en retard (min)</label>
+            <input id="retard" name="retard" type="number" min="0" step="1" placeholder="Ex : 5">
+          </div>
+
+          <div>
+            <label for="heuresSupp">Heures supp (si faites)</label>
+            <input id="heuresSupp" name="heuresSupp" type="number" min="0" step=".25" placeholder="Ex : 1.5">
+          </div>
+
+          <div>
+            <label for="commentaire">Commentaire (optionnel)</label>
+            <input id="commentaire" name="commentaire" type="text" placeholder="Ex : Coup de feu + service banquet">
+          </div>
         </div>
 
-        <label for="hours_extra">Heures supp (si faites)</label>
-        <select id="hours_extra" name="hours_extra">
-          <option value="">0h</option>
-          <option>1h</option>
-          <option>2h</option>
-          <option>3h</option>
-          <option>8h</option>
-          <option>16h</option>
-        </select>
-
-        <label for="comment">Commentaire (optionnel)</label>
-        <textarea id="comment" name="comment" rows="3" placeholder="Ex : Coup de feu + service banquet"></textarea>
-
-        <button type="submit">📨 Envoyer</button>
+        <div style="margin-top:12px">
+          <button type="submit">Envoyer</button>
+        </div>
       </form>
-      <p id="flash" role="status" class="flash" aria-live="polite"></p>
     </section>
 
-    <section class="card">
-      <div class="section-header">
-        <h2>Historique (ce navigateur)</h2>
-        <div class="actions">
+    <section class="card" style="margin-top:16px">
+      <div class="grid">
+        <div><h2>Historique (ce navigateur)</h2></div>
+        <div class="actions" style="justify-content:flex-end; align-items:center">
           <button id="exportCsv" class="secondary">Exporter CSV</button>
-          <button id="clearData" class="danger">Effacer</button>
+          <button id="clearAll" class="contrast">Effacer</button>
         </div>
       </div>
-      <div class="table-wrap">
-        <table id="table">
+
+      <div style="overflow:auto">
+        <table id="tableau" role="grid">
           <thead>
             <tr>
               <th>Date</th>
               <th>Nom</th>
               <th>Poste</th>
               <th>Départ</th>
-              <th>Retard</th>
+              <th>Retard (min)</th>
               <th>Heures supp</th>
               <th>Commentaire</th>
+              <th>Supp.</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
-      <p class="hint">Astuce : pour un stockage centralisé (toute l'équipe), on peut brancher un petit serveur plus tard.</p>
+
+      <small class="muted">Astuce : pour un stockage partagé par toute l’équipe, on pourra brancher plus tard un petit serveur.</small><br>
+      <small class="muted">Fonctionne hors-ligne (stockage local du navigateur).</small>
     </section>
   </main>
 
-  <footer class="footer">
-    <small>Fonctionne hors-ligne • Installable (PWA)</small>
+  <footer>
+    <small>©️ <span id="year"></span> Pointage Cuisine — GitHub Pages</small>
   </footer>
 
-  <script src="script.js"></script>
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js');
+    // ------- Utilitaires -------
+    const LS_KEY = "pointage_entries_v1";
+
+    function loadEntries() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch { return []; }
+    }
+    function saveEntries(list) {
+      localStorage.setItem(LS_KEY, JSON.stringify(list));
+    }
+    function formatDate(d) {
+      const dt = new Date(d);
+      return dt.toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
+    }
+
+    // ------- Rendu du tableau -------
+    const tbody = document.querySelector("#tableau tbody");
+
+    function render() {
+      const data = loadEntries();
+      tbody.innerHTML = "";
+      if (!data.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 8;
+        td.textContent = "Aucune entrée pour l’instant.";
+        tr.appendChild(td); tbody.appendChild(tr);
+        return;
+      }
+      data.forEach((row, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${formatDate(row.createdAt)}</td>
+          <td>${row.nom || ""}</td>
+          <td>${row.poste || ""}</td>
+          <td>${row.depart || ""}</td>
+          <td>${row.retard ?? ""}</td>
+          <td>${row.heuresSupp ?? ""}</td>
+          <td>${row.commentaire || ""}</td>
+          <td><button class="secondary" data-del="${idx}" aria-label="Supprimer la ligne">🗑️</button></td>
+        `;
+        tbody.appendChild(tr);
       });
     }
+
+    // ------- Soumission du formulaire -------
+    document.getElementById("formPointage").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const entry = {
+        createdAt: Date.now(),
+        nom: f.nom.value.trim(),
+        poste: f.poste.value,
+        depart: f.depart.value,
+        retard: f.retard.value ? Number(f.retard.value) : "",
+        heuresSupp: f.heuresSupp.value ? Number(f.heuresSupp.value) : "",
+        commentaire: f.commentaire.value.trim()
+      };
+      if (!entry.nom || !entry.poste || !entry.depart) {
+        alert("Nom, Poste et Heure de départ sont requis.");
+        return;
+      }
+      const list = loadEntries();
+      list.unshift(entry);
+      saveEntries(list);
+      f.reset();
+      render();
+    });
+
+    // ------- Suppression par ligne -------
+    tbody.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-del]");
+      if (!btn) return;
+      const index = Number(btn.getAttribute("data-del"));
+      const list = loadEntries();
+      list.splice(index, 1);
+      saveEntries(list);
+      render();
+    });
+
+    // ------- Export CSV -------
+    document.getElementById("exportCsv").addEventListener("click", () => {
+      const data = loadEntries();
+      if (!data.length) { alert("Rien à exporter."); return; }
+      const header = ["Date","Nom","Poste","Départ","Retard (min)","Heures supp","Commentaire"];
+      const rows = data.map(r => [
+        new Date(r.createdAt).toISOString(),
+        r.nom ?? "", r.poste ?? "", r.depart ?? "",
+        r.retard ?? "", r.heuresSupp ?? "", (r.commentaire ?? "").replace(/\n/g," ")
+      ]);
+      const csv = [header, ...rows].map(arr =>
+        arr.map(v => `"${String(v).replace(/"/g,'""')}"`).join(";")
+      ).join("\n");
+      const blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "pointage.csv";
+      document.body.appendChild(a); a.click();
+      URL.revokeObjectURL(url); a.remove();
+    });
+
+    // ------- Effacer tout -------
+    document.getElementById("clearAll").addEventListener("click", () => {
+      if (confirm("Effacer tout l’historique de ce navigateur ?")) {
+        localStorage.removeItem(LS_KEY);
+        render();
+      }
+    });
+
+    // ------- Init -------
+    document.getElementById("year").textContent = new Date().getFullYear();
+    render();
   </script>
 </body>
 </html>
