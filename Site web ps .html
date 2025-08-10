@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pointage Cuisine</title>
+  <meta name="theme-color" content="#ff7e5f">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="appbar">
+    <h1>📋 Pointage Cuisine</h1>
+    <button id="installBtn" class="secondary" hidden>Installer</button>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Déclarer mon pointage</h2>
+      <form id="form">
+        <label for="name">Nom / code <span class="req">*</span></label>
+        <input id="name" name="name" autocomplete="name" placeholder="Ex: Ennio" required>
+
+        <label for="role">Poste <span class="req">*</span></label>
+        <select id="role" name="role" required>
+          <option value="">-- Sélectionnez --</option>
+          <option>Chef</option>
+          <option>Second</option>
+          <option>Chef de partie</option>
+          <option>Commis</option>
+          <option>Apprenti</option>
+        </select>
+
+        <div class="grid-2">
+          <div>
+            <label for="departure_time">Heure de départ</label>
+            <input id="departure_time" name="departure_time" type="time">
+          </div>
+          <div>
+            <label for="arrived_late">Arrivé en retard ?</label>
+            <select id="arrived_late" name="arrived_late">
+              <option value="0">Non</option>
+              <option value="1">Oui</option>
+            </select>
+          </div>
+        </div>
+
+        <label for="hours_extra">Heures supp (si faites)</label>
+        <select id="hours_extra" name="hours_extra">
+          <option value="">0h</option>
+          <option>1h</option>
+          <option>2h</option>
+          <option>3h</option>
+          <option>8h</option>
+          <option>16h</option>
+        </select>
+
+        <label for="comment">Commentaire (optionnel)</label>
+        <textarea id="comment" name="comment" rows="3" placeholder="Ex : Coup de feu + service banquet"></textarea>
+
+        <button type="submit">📨 Envoyer</button>
+      </form>
+      <p id="flash" role="status" class="flash" aria-live="polite"></p>
+    </section>
+
+    <section class="card">
+      <div class="section-header">
+        <h2>Historique (ce navigateur)</h2>
+        <div class="actions">
+          <button id="exportCsv" class="secondary">Exporter CSV</button>
+          <button id="clearData" class="danger">Effacer</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Nom</th>
+              <th>Poste</th>
+              <th>Départ</th>
+              <th>Retard</th>
+              <th>Heures supp</th>
+              <th>Commentaire</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="hint">Astuce : pour un stockage centralisé (toute l'équipe), on peut brancher un petit serveur plus tard.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <small>Fonctionne hors-ligne • Installable (PWA)</small>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
