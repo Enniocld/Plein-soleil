@@ -1,236 +1,221 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pointage Cuisine</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pointage Cuisine Pro</title>
 
-  <!-- Design prêt à l'emploi -->
-  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+  <!-- Police moderne -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    :root { --w: 980px; }
-    body { min-height: 100vh; background: linear-gradient(180deg,#0b1220,#0f172a); }
-    header, main { max-width: var(--w); margin: 0 auto; }
-    header { padding: 24px 16px 0; }
-    main { padding: 8px 16px 40px; }
-    .card { background: #0d1324; border: 1px solid #1f2a44; border-radius: 14px; padding: 18px; }
-    h1, h2 { margin: .2rem 0 .8rem; }
-    small.muted { color: #94a3b8; }
-    table thead th { white-space: nowrap; }
-    .actions { display: flex; gap: .5rem; flex-wrap: wrap; }
-    footer { max-width: var(--w); margin: 24px auto 56px; padding: 0 16px; color:#94a3b8; }
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin:0; padding:0; font-family: 'Inter', sans-serif; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      line-height: 1.5;
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .muted { color: var(--muted); font-size: 0.9rem; }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      animation: fadeIn .4s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity:0; transform:translateY(10px);}
+      to {opacity:1; transform:translateY(0);}
+    }
+    label { font-weight: 600; margin-bottom: 6px; display: block; }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      border-radius: var(--radius);
+      border: none;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+    input, select {
+      background: #0f172a;
+      color: var(--text);
+      border: 1px solid #334155;
+    }
+    button {
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: var(--accent-hover); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #334155;
+    }
+    th { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; }
+    tr:hover { background: rgba(255,255,255,0.05); }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .secondary {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    .secondary:hover {
+      background: var(--accent);
+      color: #0f172a;
+    }
   </style>
 </head>
-
 <body>
-  <header>
-    <h1>🍽️ Pointage Cuisine</h1>
-    <small class="muted">Déclare ton pointage et garde l’historique dans ce navigateur.</small>
-  </header>
 
-  <main>
-    <section class="card">
-      <h2>Déclarer mon pointage</h2>
-      <form id="formPointage">
-        <div class="grid">
-          <div>
-            <label for="nom">Nom / code</label>
-            <input id="nom" name="nom" type="text" placeholder="Ex : Ennio" required>
-          </div>
+  <h1>🍽️ Pointage Cuisine Pro</h1>
+  <p class="muted">Formulaire rapide avec sauvegarde locale & export CSV</p>
 
-          <div>
-            <label for="poste">Poste</label>
-            <select id="poste" name="poste" required>
-              <option value="">— Sélectionnez —</option>
-              <option>Plonge</option>
-              <option>Entrées</option>
-              <option>Chauds</option>
-              <option>Desserts</option>
-              <option>Service</option>
-              <option>Économat</option>
-              <option>Pass</option>
-            </select>
-          </div>
+  <!-- Formulaire -->
+  <div class="card">
+    <form id="pointageForm">
+      <label for="nom">Nom / Code</label>
+      <input type="text" id="nom" required placeholder="Ex : Ennio">
 
-          <div>
-            <label for="depart">Heure de départ</label>
-            <input id="depart" name="depart" type="time" placeholder="12:30" required>
-          </div>
+      <label for="poste">Poste</label>
+      <select id="poste" required>
+        <option value="">— Sélectionnez —</option>
+        <option>Chef</option>
+        <option>Second</option>
+        <option>Chef de partie</option>
+        <option>Commis</option>
+        <option>Apprenti</option>
+      </select>
 
-          <div>
-            <label for="retard">Arrivé en retard (min)</label>
-            <input id="retard" name="retard" type="number" min="0" step="1" placeholder="Ex : 5">
-          </div>
+      <label for="duree">Durée</label>
+      <select id="duree" required>
+        <option value="">— Sélectionnez —</option>
+        <option>1h</option>
+        <option>2h</option>
+        <option>3h</option>
+        <option>8h</option>
+        <option>16h</option>
+      </select>
 
-          <div>
-            <label for="heuresSupp">Heures supp (si faites)</label>
-            <input id="heuresSupp" name="heuresSupp" type="number" min="0" step=".25" placeholder="Ex : 1.5">
-          </div>
+      <label for="commentaire">Commentaire</label>
+      <input type="text" id="commentaire" placeholder="Facultatif">
 
-          <div>
-            <label for="commentaire">Commentaire (optionnel)</label>
-            <input id="commentaire" name="commentaire" type="text" placeholder="Ex : Coup de feu + service banquet">
-          </div>
-        </div>
+      <button type="submit">Enregistrer</button>
+    </form>
+  </div>
 
-        <div style="margin-top:12px">
-          <button type="submit">Envoyer</button>
-        </div>
-      </form>
-    </section>
-
-    <section class="card" style="margin-top:16px">
-      <div class="grid">
-        <div><h2>Historique (ce navigateur)</h2></div>
-        <div class="actions" style="justify-content:flex-end; align-items:center">
-          <button id="exportCsv" class="secondary">Exporter CSV</button>
-          <button id="clearAll" class="contrast">Effacer</button>
-        </div>
-      </div>
-
-      <div style="overflow:auto">
-        <table id="tableau" role="grid">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Nom</th>
-              <th>Poste</th>
-              <th>Départ</th>
-              <th>Retard (min)</th>
-              <th>Heures supp</th>
-              <th>Commentaire</th>
-              <th>Supp.</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <small class="muted">Astuce : pour un stockage partagé par toute l’équipe, on pourra brancher plus tard un petit serveur.</small><br>
-      <small class="muted">Fonctionne hors-ligne (stockage local du navigateur).</small>
-    </section>
-  </main>
-
-  <footer>
-    <small>©️ <span id="year"></span> Pointage Cuisine — GitHub Pages</small>
-  </footer>
+  <!-- Historique -->
+  <div class="card">
+    <div class="actions" style="margin-bottom:12px">
+      <button id="exportBtn" class="secondary">Exporter CSV</button>
+      <button id="clearBtn" class="secondary">Effacer tout</button>
+    </div>
+    <table id="historiqueTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Nom</th>
+          <th>Poste</th>
+          <th>Durée</th>
+          <th>Commentaire</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
   <script>
-    // ------- Utilitaires -------
-    const LS_KEY = "pointage_entries_v1";
+    const STORAGE_KEY = "pointageData";
+    const form = document.getElementById("pointageForm");
+    const tbody = document.querySelector("#historiqueTable tbody");
 
-    function loadEntries() {
-      try {
-        const raw = localStorage.getItem(LS_KEY);
-        return raw ? JSON.parse(raw) : [];
-      } catch { return []; }
+    function loadData() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     }
-    function saveEntries(list) {
-      localStorage.setItem(LS_KEY, JSON.stringify(list));
+    function saveData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
-    function formatDate(d) {
-      const dt = new Date(d);
-      return dt.toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
-    }
-
-    // ------- Rendu du tableau -------
-    const tbody = document.querySelector("#tableau tbody");
-
-    function render() {
-      const data = loadEntries();
+    function renderTable() {
+      const data = loadData();
       tbody.innerHTML = "";
-      if (!data.length) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = 8;
-        td.textContent = "Aucune entrée pour l’instant.";
-        tr.appendChild(td); tbody.appendChild(tr);
-        return;
-      }
-      data.forEach((row, idx) => {
+      data.forEach((item) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${formatDate(row.createdAt)}</td>
-          <td>${row.nom || ""}</td>
-          <td>${row.poste || ""}</td>
-          <td>${row.depart || ""}</td>
-          <td>${row.retard ?? ""}</td>
-          <td>${row.heuresSupp ?? ""}</td>
-          <td>${row.commentaire || ""}</td>
-          <td><button class="secondary" data-del="${idx}" aria-label="Supprimer la ligne">🗑️</button></td>
+          <td>${new Date(item.date).toLocaleString("fr-FR")}</td>
+          <td>${item.nom}</td>
+          <td>${item.poste}</td>
+          <td>${item.duree}</td>
+          <td>${item.commentaire || ""}</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    // ------- Soumission du formulaire -------
-    document.getElementById("formPointage").addEventListener("submit", (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const f = e.target;
-      const entry = {
-        createdAt: Date.now(),
-        nom: f.nom.value.trim(),
-        poste: f.poste.value,
-        depart: f.depart.value,
-        retard: f.retard.value ? Number(f.retard.value) : "",
-        heuresSupp: f.heuresSupp.value ? Number(f.heuresSupp.value) : "",
-        commentaire: f.commentaire.value.trim()
-      };
-      if (!entry.nom || !entry.poste || !entry.depart) {
-        alert("Nom, Poste et Heure de départ sont requis.");
+      const nom = document.getElementById("nom").value.trim();
+      const poste = document.getElementById("poste").value;
+      const duree = document.getElementById("duree").value;
+      const commentaire = document.getElementById("commentaire").value.trim();
+
+      const newEntry = { date: Date.now(), nom, poste, duree, commentaire };
+      const data = loadData();
+      data.unshift(newEntry);
+      saveData(data);
+      form.reset();
+      renderTable();
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      if (confirm("Effacer tout l’historique ?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        renderTable();
+      }
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const data = loadData();
+      if (!data.length) {
+        alert("Aucune donnée à exporter.");
         return;
       }
-      const list = loadEntries();
-      list.unshift(entry);
-      saveEntries(list);
-      f.reset();
-      render();
-    });
-
-    // ------- Suppression par ligne -------
-    tbody.addEventListener("click", (e) => {
-      const btn = e.target.closest("button[data-del]");
-      if (!btn) return;
-      const index = Number(btn.getAttribute("data-del"));
-      const list = loadEntries();
-      list.splice(index, 1);
-      saveEntries(list);
-      render();
-    });
-
-    // ------- Export CSV -------
-    document.getElementById("exportCsv").addEventListener("click", () => {
-      const data = loadEntries();
-      if (!data.length) { alert("Rien à exporter."); return; }
-      const header = ["Date","Nom","Poste","Départ","Retard (min)","Heures supp","Commentaire"];
-      const rows = data.map(r => [
-        new Date(r.createdAt).toISOString(),
-        r.nom ?? "", r.poste ?? "", r.depart ?? "",
-        r.retard ?? "", r.heuresSupp ?? "", (r.commentaire ?? "").replace(/\n/g," ")
-      ]);
-      const csv = [header, ...rows].map(arr =>
-        arr.map(v => `"${String(v).replace(/"/g,'""')}"`).join(";")
-      ).join("\n");
-      const blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
+      let csv = "Date,Nom,Poste,Durée,Commentaire\n";
+      data.forEach((item) => {
+        csv += `"${new Date(item.date).toLocaleString("fr-FR")}","${item.nom}","${item.poste}","${item.duree}","${item.commentaire || ""}"\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url; a.download = "pointage.csv";
-      document.body.appendChild(a); a.click();
-      URL.revokeObjectURL(url); a.remove();
+      a.href = url;
+      a.download = "pointage.csv";
+      a.click();
     });
 
-    // ------- Effacer tout -------
-    document.getElementById("clearAll").addEventListener("click", () => {
-      if (confirm("Effacer tout l’historique de ce navigateur ?")) {
-        localStorage.removeItem(LS_KEY);
-        render();
-      }
-    });
-
-    // ------- Init -------
-    document.getElementById("year").textContent = new Date().getFullYear();
-    render();
+    renderTable();
   </script>
+
 </body>
 </html>
